@@ -1,0 +1,17 @@
+<RootFolder>E:\Output</RootFolder>
+<user>admin</user>
+{not used anywhere Yet}
+<password>7890</password>
+{NO more than 4 characters as password}
+<ServerURL>http://117.100.100.20:8080/api/</ServerURL>
+<ServiceProfileID>f9f80426-52c6-4dfe-9b58-1c376d6e0720</ServiceProfileID>
+{important for Chirpstack, Dont edit these fields}
+<DeviceProfileID>a8fdb64e-7493-49c3-8ee9-f7ed20ef267c</DeviceProfileID>
+{important for Chirpstack, Dont edit these fields}
+<LogFileDestination>\\netserver3\DATA\Loraproduction_Engineering\LGW\Log</LogFileDestination>
+{Important DataBase Info. Below >>>>>>>>>>>>>>}
+<DBServerName>Netserver3</DBServerName>
+<DBName>LoraGasVision</DBName>
+<DBUser>power</DBUser>
+<DBPass>power</DBPass>
+{E:\Output  \\netserver3\DATA\Loraproduction_Engineering}
