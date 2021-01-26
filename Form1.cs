@@ -33,12 +33,20 @@ namespace WaterGasTool
         public List<string> SrNum_Main      = new List<string>();
         public List<long> SrNum_Long        = new List<long>();
 
+        public List<int> StatusCodes = new List<int>();
+
+        public List<string> FW_Scanning = new List<string>();
+        public List<string> DevEUI_Scanning = new List<string>();
+
         public List<string> EndsightStatus_M  = new List<string>();
         public List<string> EndsightDevUI_M   = new List<string>();
         public List<string> EndsightSerialNumber_M = new List<string>();
 
         public List<string> statusCode = new List<string>();
         public List<string> tempEndMeterID = new List<string>();
+
+        int[] StatusCodesModem = new int[] { 0, 1, 20, 21, 40, 41, 50, 60, 90, 91 };
+        long WaterSerialNumber, GasSerialNumber;
 
         string[] TempArrayForDisplayContent = new string[10];       //for displaying the table
         public string[] Duplicates          = new string[700];
@@ -53,17 +61,23 @@ namespace WaterGasTool
         string          Endsight_File1FullPath, Endsight_File1Name;
         string          CompleteLogAddress;
         string          FileAddress;
+        public string MeterTypeCode, StatusCode, WaterFirmwareVersion, GasFirmwareVersion;
 
-        const string version                = "V "+"0.0.2";
+        const string version                = "V "+"0.0.3";
         const string DataMergerFileStorage  = @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Data\";
         const string ConfigFilepath         = @"\\netserver3\DATA\Loraproduction_Engineering\LGW\config\ConfigFile.txt";
+        const string SerialNumberTPath      = @"\\netserver3\DATA\Loraproduction_Engineering\LGW\config\SerialNumberTracker.txt";
+        const string BusyListnerPath = @"\\netserver3\DATA\Loraproduction_Engineering\LGW\config\BusyListner.txt";
         const string FileFormat             = ".csv";
         public const string FileOutputForErrorSheets_tab2 = @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Endsight\ErrorSheets";
         public string FormatStringType      = string.Empty;
         public int  CounterForUpdatedMetersToDB = 0, CounterForCorrectDataSet = 0;
+        public int Flag_StopOthers = 1, Flag_Release = 0; 
 
         bool flag_ListviewOption        = false;
-        bool flag_NoAuthentication      = true;
+        bool flag_AuthenticationError      = true;
+        bool flag_ClickOnText           = false;
+        bool flag_busy           = false;
 
         ListViewItem itm;
 
@@ -94,7 +108,7 @@ namespace WaterGasTool
 
             monthCalendar1.Visible = false; listView1.Visible = false; label_authenticator.Visible = false;
             textBox_SerialNumber_minVal.Visible = false; textBox_SerialNumber_maxVal.Visible = false;
-            label3.Visible = false;progressBar_universal.Visible = false; label_MeterRange.Visible = false; label_Path.Visible = false; label_HeadingToPath.Visible = false;
+            label3.Visible = false;pBarUni.Visible = false; label_MeterRange.Visible = false; //label_Path.Visible = false; 
             label_authenticator.Visible = false; listView_AMR.Visible = false; label7.Visible = false; label8.Visible = false; progressBar_AMR.Visible = false; label9.Visible = false;
             label_Date.Text = "Date: "+DateTime.Now.ToString("MM/dd/yyyy");
 
@@ -102,113 +116,119 @@ namespace WaterGasTool
             string IP_Comp = Dns.GetHostByName(Host).AddressList[0].ToString();
             Loghandler LG = new Loghandler(CompleteLogAddress);
             LG.WriteToFile(true, "Host: " + Host + ", IP: " + IP_Comp+", App Opened");
+            TextDocumentationDisplay( IP_Comp,  Host);
 
-            //documentation
-            richTextBox_Documentation.Text = "Links to the Important folders are as follows.\r\n" +
-                "\r\nFolder to access the latest software setup::\r\n" +
-                @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Software_setup_File" +
-                "\r\nFolder to access merged Files::\r\n" +
-                @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Data" +
-                "\r\nParent Network Folder for all the Computers::\r\n" +
-                @"\\netserver3\DATA\Loraproduction_Engineering\LGW"+
-                "\r\nDocumentation is saved here::\r\n" +
-                @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Documentation";
-            richTextBox_Documentation.AppendText("\r\n\r\nAny queries:: Vishal@visionmetering.com (mention IP address fro your computer while writing the Email)");
-            richTextBox_Documentation.AppendText("\r\n\r\nversion currently running: "+version+" and version Available is "+ VersionFromConfig);
-            richTextBox_Documentation.AppendText("\r\n\r\nIP address: " + IP_Comp + " and Your ComputerName: " + Host);
+            StatusCodes.AddRange(StatusCodesModem);
 
-            richTextBox_AMR.Text = "Please verify that the Endsight root folder is correct before Doing AMR check.\r\nEndsight RootFolder: "+ endsightRootFolder;
         }
 
         #region Button Clicks
         private void button1_Click(object sender, EventArgs e)
         {
+            flag_busy = false;
             if (!string.IsNullOrEmpty(textBox_dateShow.Text))
             {
+                #region systemInit
                 listView1.Visible = false; flag_ListviewOption = false; checkBox_ViewList.Checked = false;
-                progressBar_universal.Visible = true;
-                progressBar_universal.Minimum = 0; progressBar_universal.Maximum = 100;
-                progressBar_universal.Value = progressBar_universal.Minimum;
-                progressBar_universal.Value += 10;//1
-                VarClearFuntion();
-                progressBar_universal.Value += 10;//2
-                DateSpecificFileSelect();
-                progressBar_universal.Value += 10;//3
+                pBarUni.Visible = true;
+                pBarUni.Minimum = 0; pBarUni.Maximum = 100;
+                pBarUni.Value = pBarUni.Minimum;
+                pBarUni.Value += 10;//1
+                #endregion systemInit
+
+                richTextBoxTab1.Clear();
+                VarClearFuntion();  pBarUni.Value += 10;//2
+
+                DateSpecificFileSelect();   pBarUni.Value += 10;//3
+
                 if (File.Exists(DataMergerFileStorage + "AutoMergerFor_" + textBox_dateShow.Text + FileFormat))
                     File.Delete(DataMergerFileStorage + "AutoMergerFor_" + textBox_dateShow.Text + FileFormat);
-                progressBar_universal.Value += 10;//4
-                FIleMerger();
-                progressBar_universal.Value += 10;//5
+                pBarUni.Value += 10;//4
+
+                FIleMerger();   pBarUni.Value += 10;//5
+
                 DataInOut Din = new DataInOut();
                 Din.CSVFileExtractor(DataMergerFileStorage + "AutoMergerFor_" + textBox_dateShow.Text + FileFormat);
+
                 #region saving to main
                 this.DevEUI_Main = Din.DevEUI;
                 this.AppKey_Main = Din.AppKey;
                 this.CustVer_Main = Din.CustVer;
                 this.FwVer_Main = Din.FwVer;
                 #endregion saving to main end
-                progressBar_universal.Value += 10;//6
-                Get_DevEUI();
-                progressBar_universal.Value += 10;//7
-                DuplicateFinder();
-                progressBar_universal.Value += 10;//8
-                //listView1.Clear();
-                DisplayListView();
 
-                progressBar_universal.Value = progressBar_universal.Maximum; Thread.Sleep(2000);
-                progressBar_universal.Visible = false;
-                flag_ListviewOption = true; checkBox_ViewList.Checked = true; checkBox_ViewList.ForeColor = Color.Green;
-                checkBox_MeterRange.Visible = true;
+                pBarUni.Value += 10;//6
 
-                foreach (string SerialNum in SerialNumber_Main)
+                if(DevEUI_Main.Count!=0)
                 {
-                    if (long.TryParse(SerialNum, out long SerialNum_long))
-                        SrNum_Long.Add(SerialNum_long);
+                    Get_DevEUI();   pBarUni.Value += 10;//7
+
+                    DuplicateFinder(); pBarUni.Value += 10;//8
+
+                    DisplayListView();
+
+                    pBarUni.Value = pBarUni.Maximum; Thread.Sleep(2000);
+                    pBarUni.Visible = false;
+                    flag_ListviewOption = true; checkBox_ViewList.Checked = true; checkBox_ViewList.ForeColor = Color.Green;
+                    checkBox_MeterRange.Visible = true;
+
+                    foreach (string SerialNum in SerialNumber_Main)
+                    {
+                        if (long.TryParse(SerialNum, out long SerialNum_long))
+                            SrNum_Long.Add(SerialNum_long);
+                    }
+                    try
+                    {
+                        SrNum_Long.Sort();
+                        label_MeterRange.Visible = true;
+                        label_MeterRange.Text = "Serial No. Range " + SrNum_Long[0] + " <--> " + SrNum_Long[SrNum_Long.Count - 1];
+                    }
+                    catch { label_MeterRange.Text = "Serial No. Range not available"; checkBox_MeterRange.Visible = false; }
+
+                    //log
+                    Loghandler LG = new Loghandler(CompleteLogAddress);
+                    LG.WriteToFile(true, textBox_dateShow.Text + " Files are merged");
+                    LG.WriteToFile(true, DevEUI_Main.Count + " Records are merged into 1 file.");
+                    flag_busy = true;
                 }
-                try
+                else
                 {
-
-                    SrNum_Long.Sort();
-                    label_MeterRange.Visible = true;
-                    label_MeterRange.Text = "Serial No. Range " + SrNum_Long[0] + " <--> " + SrNum_Long[SrNum_Long.Count - 1];
+                    richTextBoxTab1.AppendText("\r\nFle are empty.");
+                    Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true,"Files are empty for specific date.");
+                    pBarUni.Value = pBarUni.Maximum;
                 }
-                catch { label_MeterRange.Text = "Serial No. Range not available"; checkBox_MeterRange.Visible = false; }
 
-                //log
-                Loghandler LG = new Loghandler(CompleteLogAddress);
-                LG.WriteToFile(true, textBox_dateShow.Text+" Files are merged");
-                LG.WriteToFile(true, DevEUI_Main.Count+" Records are merged into 1 file.");
             }
-            else { MessageBox.Show("Select the date, First!"); Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: Select the date, First!"); }
+            else { MessageBox.Show("Select the date, First!"); Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: Select the date, First!"); pBarUni.Value = pBarUni.Maximum; }
         }
         private async void button2_Click(object sender, EventArgs e)
         {
             int result = 0; int result01 = 0;int counterForSuccessPOST = 0; int counterForUNSuccessPOST = 0; int counterForValidSerial = 0;
             
-            progressBar_universal.Minimum = 0; progressBar_universal.Maximum = DevEUI_Main.Count+50;
-            progressBar_universal.Value = progressBar_universal.Minimum;
+            pBarUni.Minimum = 0; pBarUni.Maximum = DevEUI_Main.Count+50;
+            pBarUni.Value = pBarUni.Minimum;
             if(!string.IsNullOrEmpty(textBox_ApplName.Text))
                 textBox_ApplName.Text = "LGW_" + textBox_ApplName.Text;
            
            if(!AuthenticationPopup())//flag_NoAuthentication
             {
-                progressBar_universal.Visible = true;
-                flag_NoAuthentication = true;
+                pBarUni.Visible = true;
+                flag_AuthenticationError = true;
                 if (string.IsNullOrEmpty(textBox_ApplDesp.Text))
                     textBox_ApplDesp.Text = "Date__" + textBox_dateShow.Text;
 
-                progressBar_universal.Value += 10;//1
+                pBarUni.Value += 10;//1
                 APICalls Chirp = new APICalls(serverURL, serviceProfileID, deviceProfileID);
                 if (int.Equals(await Chirp.ChirPostLogin(), 21))
                 {
-                    progressBar_universal.Value += 10;//2
+                    pBarUni.Value += 10;//2
                     richTextBoxTab1.Clear();
                     richTextBoxTab1.AppendText("Logged in on ChirpStack!\r\n"); Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Success: Logged in on ChirpStack!");
                     richTextBoxTab1.AppendText("\r\nserverURL: "+ serverURL);
                     if (int.Equals(await Chirp.ChirpGetApplicationName(textBox_ApplName.Text), 61))
                     {
                         result01 = 61;
-                        progressBar_universal.Value += 10;//3
+                        pBarUni.Value += 10;//3
                         richTextBoxTab1.AppendText("The Application Name "+ textBox_ApplName.Text + " Already exists, Using Existing!\r\n");
                         richTextBoxTab1.AppendText("the Application ID is:: " + Chirp.ChirpPostApplID + "\r\n");
 
@@ -265,7 +285,7 @@ namespace WaterGasTool
                                     result = 0; counterForUNSuccessPOST++;
                                     richTextBoxTab1.AppendText("The DevEUI: " + DevEUI_Main[counterForDevices] + " is not uploaded.(" + SerialNumber_Main[counterForDevices] + ")\r\n");
                                 }
-                                progressBar_universal.Value += 1; result = 0;
+                                pBarUni.Value += 1; result = 0;
                             }
                             catch { richTextBoxTab1.AppendText("Some parsing Error. " + DevEUI_Main[counterForDevices] + "\r\n"); 
                                 LG.WriteToFile(true, "Error: Some parsing Error."); }
@@ -278,8 +298,8 @@ namespace WaterGasTool
 
                     LG.WriteToFile(true, "Success: MS:"+ counterForSuccessPOST+", MUS:"+ counterForUNSuccessPOST+", ValS#:"+ counterForValidSerial+", Tot:" + SerialNumber_Main.Count);
 
-                    progressBar_universal.Value = progressBar_universal.Maximum; Thread.Sleep(5000); checkBox_ViewList.Checked = false; checkBox_ViewList.ForeColor = Color.Black;
-                    progressBar_universal.Visible = false;
+                    pBarUni.Value = pBarUni.Maximum; Thread.Sleep(5000); checkBox_ViewList.Checked = false; checkBox_ViewList.ForeColor = Color.Black;
+                    pBarUni.Visible = false;
 
                     counterForSuccessPOST = 0; counterForUNSuccessPOST = 0; counterForValidSerial = 0; label_authenticator.Visible = false;
                 }
@@ -291,7 +311,7 @@ namespace WaterGasTool
 
             if(!AuthenticationPopup())//flag_NoAuthentication
             {
-                flag_NoAuthentication = true;
+                flag_AuthenticationError = true;
                 DialogResult dialogR = CF.ShowDialog();
                 label_authenticator.Visible = true;
                 if (dialogR == DialogResult.Cancel) { }
@@ -299,7 +319,7 @@ namespace WaterGasTool
                 {
                     if (!AuthenticationPopup())//flag_NoAuthentication
                     {
-                        CF.FileWrite(); flag_NoAuthentication = true;
+                        CF.FileWrite(); flag_AuthenticationError = true;
                          Loghandler LG = new Loghandler(CompleteLogAddress);
                         LG.WriteToFile(true, "Success: Config File Modified. Credentials Correct");
                         label_authenticator.Text = "Application Restart suggested. "; label_authenticator.ForeColor = Color.Red; button1.Visible = false; button2.Visible = false; Close();
@@ -536,7 +556,7 @@ namespace WaterGasTool
         private void button_AMR_Start_Click(object sender, EventArgs e)
         {
             //authentication
-            flag_NoAuthentication = true;
+            flag_AuthenticationError = true;
             Authenticator AU = new Authenticator(this.CSPassword);
             DialogResult dialogR = AU.ShowDialog();
             label_authenticator.Visible = true;
@@ -545,22 +565,22 @@ namespace WaterGasTool
                 if (AU.Flag_AuthenticationSucccess)
                 {
                     label_authenticator.Text = "The Credentials are Correct."; label_authenticator.ForeColor = Color.Green;
-                    flag_NoAuthentication = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, label_authenticator.Text);
+                    flag_AuthenticationError = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, label_authenticator.Text);
                 }
                 else if (AU.Flag_AuthenticationSucccess && string.IsNullOrEmpty(textBox_ApplName.Text))
                 {
                     label_authenticator.Text = "The Credentials are Correct, Empty Slots."; label_authenticator.ForeColor = Color.Red;
-                    progressBar_universal.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
+                    pBarUni.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
                 }
                 else if (!AU.Flag_AuthenticationSucccess)
                 {
-                    label_authenticator.Text = "The Credentials are incorrect."; flag_NoAuthentication = true; label_authenticator.ForeColor = Color.Red;
-                    progressBar_universal.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
+                    label_authenticator.Text = "The Credentials are incorrect."; flag_AuthenticationError = true; label_authenticator.ForeColor = Color.Red;
+                    pBarUni.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
                 }
                 AU.Dispose();
             }
             //authentication ends
-            if (!flag_NoAuthentication)
+            if (!flag_AuthenticationError)
             {
                 progressBar_AMR.Visible = true; progressBar_AMR.Maximum = (10 * DevEUI_Main.Count)+100; progressBar_AMR.Minimum = 0; progressBar_AMR.Value = progressBar_AMR.Minimum; label9.Visible = true;
 
@@ -708,6 +728,10 @@ namespace WaterGasTool
             this.DBName = XML.ConfigFileExtractor("DBName", ConfigFilepath);
             this.DBUser = XML.ConfigFileExtractor("DBUser", ConfigFilepath);
             this.DBPass = XML.ConfigFileExtractor("DBPass", ConfigFilepath);
+
+            this.WaterSerialNumber = long.Parse(XML.ConfigFileExtractor("waterS", SerialNumberTPath));
+            this.GasSerialNumber = long.Parse(XML.ConfigFileExtractor("gasS", SerialNumberTPath));
+
             this.endsightRootFolder = XML.ConfigFileExtractor("endsight", ConfigFilepath);
             if (CSPassword.Length > 5)
             {
@@ -804,7 +828,7 @@ namespace WaterGasTool
         public bool AuthenticationPopup()
         {
             //authentication
-            flag_NoAuthentication = true;
+            flag_AuthenticationError = true;
             Authenticator AU = new Authenticator(this.CSPassword);
             DialogResult dialogR = AU.ShowDialog();
             label_authenticator.Visible = true;
@@ -813,24 +837,95 @@ namespace WaterGasTool
                 if (AU.Flag_AuthenticationSucccess)
                 {
                     label_authenticator.Text = "The Credentials are Correct."; label_authenticator.ForeColor = Color.Green;
-                    flag_NoAuthentication = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, label_authenticator.Text);
+                    flag_AuthenticationError = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, label_authenticator.Text);
                 }
                 else if (AU.Flag_AuthenticationSucccess && string.IsNullOrEmpty(textBox_ApplName.Text))
                 {
                     label_authenticator.Text = "The Credentials are Correct, Empty Slots."; label_authenticator.ForeColor = Color.Red;
-                    progressBar_universal.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
+                    pBarUni.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
                 }
                 else if (!AU.Flag_AuthenticationSucccess)
                 {
-                    label_authenticator.Text = "The Credentials are incorrect."; flag_NoAuthentication = true; label_authenticator.ForeColor = Color.Red;
-                    progressBar_universal.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
+                    label_authenticator.Text = "The Credentials are incorrect."; flag_AuthenticationError = true; label_authenticator.ForeColor = Color.Red;
+                    pBarUni.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
                 }
                 AU.Dispose();
             }
-            return flag_NoAuthentication;
+            return flag_AuthenticationError;
             //authentication ends
         }
 
+        public void TextDocumentationDisplay(string IP_Comp, string Host)
+        {
+            //documentation
+            richTextBox_Documentation.Text = "Links to the Important folders are as follows.\r\n" +
+                "\r\nFolder to access the latest software setup::\r\n" +
+                @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Software_setup_File" +
+                "\r\nFolder to access merged Files::\r\n" +
+                @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Data" +
+                "\r\nParent Network Folder for all the Computers::\r\n" +
+                @"\\netserver3\DATA\Loraproduction_Engineering\LGW" +
+                "\r\nDocumentation is saved here::\r\n" +
+                @"\\netserver3\DATA\Loraproduction_Engineering\LGW\Documentation";
+            richTextBox_Documentation.AppendText("\r\n\r\nAny queries:: Vishal@visionmetering.com (mention IP address fro your computer while writing the Email)");
+            richTextBox_Documentation.AppendText("\r\n\r\nversion currently running: " + version + " and version Available is " + VersionFromConfig);
+            richTextBox_Documentation.AppendText("\r\n\r\nIP address: " + IP_Comp + " and Your ComputerName: " + Host);
+
+            richTextBox_AMR.Text = "Please verify that the Endsight root folder is correct before Doing AMR check.\r\nEndsight RootFolder: " + endsightRootFolder;
+        }
+
+        public void Tab4_DuplicateFinder()                                   //this function helps find the duplicates in the file 
+        {
+            try
+            {
+                for (int reference = 0; reference < DevEUI_Scanning.Count - 1; reference++)
+                {
+                    for (int comparingTo = reference + 1; comparingTo < DevEUI_Scanning.Count; comparingTo++)
+                    {
+                        if (DevEUI_Scanning[reference] == DevEUI_Scanning[comparingTo])
+                        {
+                            if (comparingTo == DevEUI_Scanning.Count - 1) //this function helps to eliminate the last duplicate element without overflow
+                            {//not sure what this will do.
+
+                                DevEUI_Scanning[reference] = DevEUI_Scanning[comparingTo];
+                                FW_Scanning[reference] = FW_Scanning[comparingTo];
+
+                                DevEUI_Scanning.RemoveAt(comparingTo);
+                                FW_Scanning.RemoveAt(comparingTo);
+                                break;
+                            }
+                            while (DevEUI_Scanning[reference] == DevEUI_Scanning[comparingTo])
+                            {
+
+                                tempAryforDuplicates[0] = DevEUI_Scanning[comparingTo];
+                                tempAryforDuplicates[1] = FW_Scanning[comparingTo];
+
+                                DevEUI_Scanning.RemoveAt(comparingTo);
+                                FW_Scanning.RemoveAt(comparingTo);
+                            }
+                            DevEUI_Scanning[reference] = tempAryforDuplicates[0];
+                            FW_Scanning[reference] = tempAryforDuplicates[1];
+                        }
+                    }
+                }
+            }
+            catch{}//catch happens here sometimes, but not interrupting code.
+        }
+
+        public void SerialNumberUpdater(long serialNumberWater, long serialNumberGas, string pathOfFile)
+        {
+            string tempS = "<waterS>" + serialNumberWater + "</waterS>\r\n<gasS>" + serialNumberGas + "</gasS>";
+            File.WriteAllText(pathOfFile, tempS);
+        }
+
+        public void BusyListnerUpdater(string Flag, string pathOfFile)
+        {
+            try
+            {
+                File.WriteAllText(pathOfFile, Flag);
+            }
+            catch { MessageBox.Show("Error! unable to write to BusyListner.txt"); }
+        }
         #endregion Functions
 
         #region .NET functions
@@ -838,13 +933,203 @@ namespace WaterGasTool
         {
             textBox_dateShow.Text = monthCalendar1.SelectionRange.Start.ToString("yyyy_MM_dd");
             monthCalendar1.Visible = false;
-            label_Path.Visible = true; label_HeadingToPath.Visible = true;
-            label_Path.Text = FileAddress;
+            //label_Path.Visible = true;
+            //label_Path.Text = FileAddress;
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //SQLQueries SQL = new SQLQueries(DBServername + ";", DBName, DBUser, DBPass);
+            //if (!AuthenticationPopup())//flag_NoAuthentication
+            //{
+            //    flag_NoAuthentication = true;
+            //    VarClearFuntion();
+            //    string temp = richTextBox_Tab4.Text;
+            //    string[] D1 = temp.Split('\n');
+
+            //    foreach (string D in D1)
+            //    {
+            //        if (!string.IsNullOrEmpty(D))
+            //        {
+            //            string temp1 = D.Substring(D.IndexOf('_'), (D.LastIndexOf('_') - D.IndexOf('_')));
+            //            FW_Scanning.Add(temp1.Trim('_'));
+            //            string temp2 = D.Substring(D.LastIndexOf('_'));
+            //            DevEUI_Scanning.Add(temp2.Trim('_'));// 10 000 013  20 000 001
+            //        }
+            //    }
+            //    Tab4_DuplicateFinder(); richTextBox_Tab4.Clear();
+            //    int countForLoop = 0;
+            //    foreach (string n in DevEUI_Scanning)
+            //    {
+            //        richTextBox_Tab4.AppendText(n + "\r\n");
+            //        if(SQL.GrabADatabaseWithDevEUI(n, "MeterID").Contains("No data"))
+            //        {
+            //            WaterSerialNumber+=1;
+            //            SQL.PostDataToMeter(WaterSerialNumber, DateTime.Now, DevEUI_Scanning[countForLoop], FW_Scanning[countForLoop], comboBox_MeterTypeCode.Text, comboBox_StatusCode.Text);//string SerialNum,
+            //        }
+            //        countForLoop++;
+            //    }
+            //    SerialNumberUpdater(WaterSerialNumber,GasSerialNumber, SerialNumberTPath);
+
+            //    //int countForLoop = 0;
+            //    //foreach(string Dev in DevEUI_Scanning)
+            //    //{
+            //    //    if(FW_Scanning.Contains(textBox_WaterFw.Text))
+            //    //    {
+            //    //        SQL.PostDataToMeter(WaterSerialNumber, DateTime.Now, DevEUI_Scanning[countForLoop], FW_Scanning[countForLoop], comboBox_MeterTypeCode.Text, comboBox_StatusCode.Text);//string SerialNum, DateTime date, string DevEUI, string FwVersion
+            //    //    }
+            //    //}
+
+            //}
+        }
+
+        private void comboBox_MeterTypeCode_DropDown(object sender, EventArgs e)
+        {
+        }
+
+        private void comboBox_StatusCode_DropDown(object sender, EventArgs e)
+        {
+
+        }
+
+        private void richTextBox_Tab4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //char ch = e.KeyChar;
+            ////System.Windows.Forms.TextBox textbox = sender as System.Windows.Forms.TextBox;
+            ////if (textbox == null)
+            ////    return;
+
+            //if ((ch == '\n') || (ch == '\r'))
+            //{
+            //    richTextBox_Tab4.AppendText("You have pressed a key\r\n");
+            //}
+        }
+
+        private void button_tab1_UploadDB_Click(object sender, EventArgs e)
+        {
+            MeterUploadPOP MUP = new MeterUploadPOP(DBServername, DBName, DBUser, DBPass);
+            Loghandler LG = new Loghandler(CompleteLogAddress);
+
+            XMLfunction XML = new XMLfunction();
+            this.WaterSerialNumber = long.Parse(XML.ConfigFileExtractor("waterS", SerialNumberTPath));
+            this.GasSerialNumber = long.Parse(XML.ConfigFileExtractor("gasS", SerialNumberTPath));
+            this.flag_busy = bool.Parse(XML.ConfigFileExtractor("busy", BusyListnerPath));
+
+            flag_AuthenticationError = true;
+
+            DialogResult dialogMUP = MUP.ShowDialog();
+            label_authenticator.Visible = true;
+            if (dialogMUP == DialogResult.Cancel) { }
+
+            else if (dialogMUP == DialogResult.OK)
+            {
+                
+                this.MeterTypeCode = MUP.MeterTypeCodeString; this.StatusCode = MUP.StatusCodeString; this.WaterFirmwareVersion = MUP.WaterFirmwareString;
+                this.GasFirmwareVersion = MUP.GasfirmwareString;
+
+                if (!AuthenticationPopup())//flag_NoAuthentication
+                {
+                    LG.WriteToFile(true,"Meters started to upload to LoraGasVisionDB");
+                    flag_AuthenticationError = true;
+                    SQLQueries SQL = new SQLQueries(DBServername + ";", DBName, DBUser, DBPass);
+
+
+                    if (!flag_busy)//if false, skip the process
+                    {
+                        flag_AuthenticationError = true;
+                        //VarClearFuntion(); //not needed as the process needs the data from the Start button.
+
+                        #region commented
+                        //string temp = richTextBox_Tab4.Text;
+                        //string[] D1 = temp.Split('\n');
+
+
+
+                        //foreach (string D in D1)
+                        //{
+                        //    if (!string.IsNullOrEmpty(D))
+                        //    {
+                        //        string temp1 = D.Substring(D.IndexOf('_'), (D.LastIndexOf('_') - D.IndexOf('_')));
+                        //        FW_Scanning.Add(temp1.Trim('_'));
+                        //        string temp2 = D.Substring(D.LastIndexOf('_'));
+                        //        DevEUI_Scanning.Add(temp2.Trim('_'));// 10 000 013  20 000 001
+                        //    }
+                        //}
+                        //Tab4_DuplicateFinder(); 
+                        //DevEUI_Main
+                        //AppKey_Main
+                        //CustVer_Main
+                        //FwVer_Main
+                        //SerialNumber_Main
+                        //Duplicates
+                        #endregion commented
+
+                        richTextBoxTab1.Clear();
+                        BusyListnerUpdater("<busy>true</busy>", BusyListnerPath);//holding the position for the application
+
+                        int countForLoop = 0;
+                        richTextBoxTab1.Text = "DevEUI/s being updated\r\n\r\n";
+                        foreach (string Dev in DevEUI_Main)
+                        {
+                            if (SQL.GrabADatabaseWithDevEUI(Dev, "MeterID").Contains("No data"))
+                            {
+                                if(string.Equals(FwVer_Main[countForLoop].ToUpper(), WaterFirmwareVersion))//water FW
+                                {
+                                    try
+                                    {
+                                        WaterSerialNumber += 1;//increments even before 1st upload
+
+                                        SQL.PostDataToMeter(WaterSerialNumber, DateTime.Now, DevEUI_Main[countForLoop], FwVer_Main[countForLoop], MeterTypeCode, StatusCode, AppKey_Main[countForLoop]);
+
+                                        richTextBoxTab1.AppendText(DevEUI_Main[countForLoop] + ": " + WaterSerialNumber + "\r\n");
+                                    }
+                                    catch(Exception ex) { MessageBox.Show(ex + string.Empty);  }
+                                }
+                                else if(string.Equals(FwVer_Main[countForLoop].ToUpper(), GasFirmwareVersion))//Gas FW
+                                {
+                                    try
+                                    {
+                                        GasSerialNumber += 1;//increments even before 1st upload
+
+                                        SQL.PostDataToMeter(GasSerialNumber, DateTime.Now, DevEUI_Main[countForLoop], FwVer_Main[countForLoop], MeterTypeCode, StatusCode, AppKey_Main[countForLoop]);
+
+                                        richTextBoxTab1.AppendText(DevEUI_Main[countForLoop] + ": " + GasSerialNumber + "\r\n");
+                                    }
+                                    catch (Exception ex) { MessageBox.Show(ex + string.Empty); }
+                                }
+                            }
+                            else
+                            {
+                                richTextBoxTab1.AppendText(Dev + "-----not updated, found in the Database\r\n");
+                                LG.WriteToFile(true, "Meters started to upload to LoraGasVisionDB - Error occured");
+                            }
+                            countForLoop++;
+                        }
+                    }
+                }
+            }
+            SerialNumberUpdater(WaterSerialNumber, GasSerialNumber, SerialNumberTPath); //always reachable
+            BusyListnerUpdater("<busy>false</busy>", BusyListnerPath);//holding the position for the application
+            LG.WriteToFile(true, "Meters upload to LoraGasVisionDB - "+ WaterSerialNumber+", "+ GasSerialNumber);
+        }
+
+        private void richTextBox_Tab4_Click(object sender, EventArgs e)
+        {
+            if (!flag_ClickOnText)
+            {
+                XMLfunction XML = new XMLfunction();
+
+                this.WaterSerialNumber = long.Parse(XML.ConfigFileExtractor("waterS", SerialNumberTPath));
+                this.GasSerialNumber = long.Parse(XML.ConfigFileExtractor("gasS", SerialNumberTPath));
+
+                flag_ClickOnText = true;
+            }
+        }
+
         private void textBox_dateShow_MouseEnter(object sender, EventArgs e)
         {
             monthCalendar1.Visible = true;
-            label_Path.Visible = false; label_HeadingToPath.Visible = false;
+            //label_Path.Visible = false;
         }
         private void checkBox2_CheckStateChanged(object sender, EventArgs e)
         {

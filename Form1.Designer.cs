@@ -31,18 +31,18 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button_tab1_UploadDB = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.label_upgradeAvl = new System.Windows.Forms.Label();
             this.label_Date = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.button_CF = new System.Windows.Forms.Button();
-            this.label_HeadingToPath = new System.Windows.Forms.Label();
-            this.label_Path = new System.Windows.Forms.Label();
             this.label_authenticator = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label_MeterRange = new System.Windows.Forms.Label();
             this.checkBox_ViewList = new System.Windows.Forms.CheckBox();
-            this.progressBar_universal = new System.Windows.Forms.ProgressBar();
+            this.pBarUni = new System.Windows.Forms.ProgressBar();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -64,7 +64,6 @@
             this.monthCalendar1 = new System.Windows.Forms.MonthCalendar();
             this.textBox_dateShow = new System.Windows.Forms.TextBox();
             this.richTextBoxTab1 = new System.Windows.Forms.RichTextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -100,19 +99,18 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button_tab1_UploadDB);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.label8);
             this.tabPage1.Controls.Add(this.label_upgradeAvl);
             this.tabPage1.Controls.Add(this.label_Date);
             this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Controls.Add(this.button_CF);
-            this.tabPage1.Controls.Add(this.label_HeadingToPath);
-            this.tabPage1.Controls.Add(this.label_Path);
             this.tabPage1.Controls.Add(this.label_authenticator);
             this.tabPage1.Controls.Add(this.pictureBox1);
             this.tabPage1.Controls.Add(this.label_MeterRange);
             this.tabPage1.Controls.Add(this.checkBox_ViewList);
-            this.tabPage1.Controls.Add(this.progressBar_universal);
+            this.tabPage1.Controls.Add(this.pBarUni);
             this.tabPage1.Controls.Add(this.label6);
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.label3);
@@ -136,6 +134,28 @@
             this.tabPage1.Text = "File";
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
+            // 
+            // button_tab1_UploadDB
+            // 
+            this.button_tab1_UploadDB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_tab1_UploadDB.Location = new System.Drawing.Point(842, 91);
+            this.button_tab1_UploadDB.Name = "button_tab1_UploadDB";
+            this.button_tab1_UploadDB.Size = new System.Drawing.Size(133, 72);
+            this.button_tab1_UploadDB.TabIndex = 29;
+            this.button_tab1_UploadDB.Text = "Serial upload";
+            this.button_tab1_UploadDB.UseVisualStyleBackColor = true;
+            this.button_tab1_UploadDB.Click += new System.EventHandler(this.button_tab1_UploadDB_Click);
+            // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(842, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(133, 79);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "File Merge";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label8
             // 
@@ -190,26 +210,6 @@
             this.button_CF.MouseEnter += new System.EventHandler(this.button_CF_MouseEnter);
             this.button_CF.MouseLeave += new System.EventHandler(this.button_CF_MouseLeave);
             // 
-            // label_HeadingToPath
-            // 
-            this.label_HeadingToPath.AutoSize = true;
-            this.label_HeadingToPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_HeadingToPath.Location = new System.Drawing.Point(609, 100);
-            this.label_HeadingToPath.Name = "label_HeadingToPath";
-            this.label_HeadingToPath.Size = new System.Drawing.Size(132, 15);
-            this.label_HeadingToPath.TabIndex = 23;
-            this.label_HeadingToPath.Text = "File Input Directory:";
-            // 
-            // label_Path
-            // 
-            this.label_Path.AutoSize = true;
-            this.label_Path.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Path.Location = new System.Drawing.Point(609, 125);
-            this.label_Path.Name = "label_Path";
-            this.label_Path.Size = new System.Drawing.Size(47, 15);
-            this.label_Path.TabIndex = 22;
-            this.label_Path.Text = "label7";
-            // 
             // label_authenticator
             // 
             this.label_authenticator.AutoSize = true;
@@ -249,16 +249,16 @@
             this.checkBox_ViewList.UseVisualStyleBackColor = true;
             this.checkBox_ViewList.CheckStateChanged += new System.EventHandler(this.checkBox2_CheckStateChanged);
             // 
-            // progressBar_universal
+            // pBarUni
             // 
-            this.progressBar_universal.BackColor = System.Drawing.SystemColors.Control;
-            this.progressBar_universal.Cursor = System.Windows.Forms.Cursors.AppStarting;
-            this.progressBar_universal.Location = new System.Drawing.Point(40, 235);
-            this.progressBar_universal.Name = "progressBar_universal";
-            this.progressBar_universal.Size = new System.Drawing.Size(518, 45);
-            this.progressBar_universal.Step = 1;
-            this.progressBar_universal.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBar_universal.TabIndex = 17;
+            this.pBarUni.BackColor = System.Drawing.SystemColors.Control;
+            this.pBarUni.Cursor = System.Windows.Forms.Cursors.AppStarting;
+            this.pBarUni.Location = new System.Drawing.Point(40, 235);
+            this.pBarUni.Name = "pBarUni";
+            this.pBarUni.Size = new System.Drawing.Size(518, 45);
+            this.pBarUni.Step = 1;
+            this.pBarUni.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pBarUni.TabIndex = 17;
             // 
             // label6
             // 
@@ -430,17 +430,6 @@
             this.richTextBoxTab1.Size = new System.Drawing.Size(591, 490);
             this.richTextBoxTab1.TabIndex = 1;
             this.richTextBoxTab1.Text = "";
-            // 
-            // button1
-            // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(842, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(133, 157);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "File Merge";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // tabPage3
             // 
@@ -654,13 +643,11 @@
         private System.Windows.Forms.Label label_Date;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button button_CF;
-        private System.Windows.Forms.Label label_HeadingToPath;
-        private System.Windows.Forms.Label label_Path;
         private System.Windows.Forms.Label label_authenticator;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label_MeterRange;
         private System.Windows.Forms.CheckBox checkBox_ViewList;
-        private System.Windows.Forms.ProgressBar progressBar_universal;
+        private System.Windows.Forms.ProgressBar pBarUni;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label3;
@@ -683,6 +670,7 @@
         private System.Windows.Forms.TextBox textBox_dateShow;
         private System.Windows.Forms.RichTextBox richTextBoxTab1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_tab1_UploadDB;
     }
 }
 
