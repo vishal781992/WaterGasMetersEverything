@@ -40,14 +40,13 @@ namespace WaterGasTool
 
         public List<string> EndsightStatus_M  = new List<string>();
         public List<string> EndsightDevUI_M   = new List<string>();
-        public List<string> EndsightSerialNumber_M = new List<string>();
 
-        public List<string> statusCode = new List<string>();
         public List<string> tempEndMeterID = new List<string>();
 
         int[] StatusCodesModem = new int[] { 0, 1, 20, 21, 40, 41, 50, 60, 90, 91 };
         long WaterSerialNumber, GasSerialNumber;
 
+        string[] statusCode                 = new string[1000];
         string[] TempArrayForDisplayContent = new string[10];       //for displaying the table
         public string[] Duplicates          = new string[700];
         string[] tempAryforDuplicates       = new string[30];
@@ -57,7 +56,7 @@ namespace WaterGasTool
                         serviceProfileID    = string.Empty,
                         deviceProfileID     = string.Empty, CSPassword = string.Empty,
                         LogFileAddress      = string.Empty;
-        public string   DBServername, DBName, DBUser, DBPass, VersionFromConfig, endsightRootFolder;
+        public string   DBServername, DBName, DBUser, DBPass, VersionFromConfig, endsightRootFolder, endsight_Water_RootFolder, endsight_Gas_RootFolder;
         string          Endsight_File1FullPath, Endsight_File1Name;
         string          CompleteLogAddress;
         string          FileAddress;
@@ -110,7 +109,7 @@ namespace WaterGasTool
             textBox_SerialNumber_minVal.Visible = false; textBox_SerialNumber_maxVal.Visible = false;
             label3.Visible = false;pBarUni.Visible = false; label_MeterRange.Visible = false; //label_Path.Visible = false; 
             label_authenticator.Visible = false; listView_AMR.Visible = false; label7.Visible = false; label8.Visible = false; progressBar_AMR.Visible = false; label9.Visible = false;
-            label_Date.Text = "Date: "+DateTime.Now.ToString("MM/dd/yyyy");
+            label_Date.Text = "Date: "+DateTime.Now.ToString("MM/dd/yyyy"); button_tab1_UploadDB.Visible = false;
 
             string Host = Dns.GetHostName();
             string IP_Comp = Dns.GetHostByName(Host).AddressList[0].ToString();
@@ -208,7 +207,20 @@ namespace WaterGasTool
             pBarUni.Minimum = 0; pBarUni.Maximum = DevEUI_Main.Count+50;
             pBarUni.Value = pBarUni.Minimum;
             if(!string.IsNullOrEmpty(textBox_ApplName.Text))
-                textBox_ApplName.Text = "LGW_" + textBox_ApplName.Text;
+            {
+                if(comboBox_T1_moduleSelect.Text.ToUpper().Contains("WATER"))
+                {
+                    textBox_ApplName.Text = "WATER_" + textBox_ApplName.Text;
+                }
+                else if(comboBox_T1_moduleSelect.Text.ToUpper().Contains("GAS"))
+                {
+                    textBox_ApplName.Text = "GAS_" + textBox_ApplName.Text;
+                }
+                else
+                {
+                    textBox_ApplName.Text = "General_" + textBox_ApplName.Text;
+                }
+            }
            
            if(!AuthenticationPopup())//flag_NoAuthentication
             {
@@ -331,50 +343,66 @@ namespace WaterGasTool
         }
         private void button_AMR_Browse_Click(object sender, EventArgs e)
         {
-            listView_AMR.Visible = false;
-            string filePath = string.Empty; var fileContent = string.Empty;
-            string Endsight_filePath = this.endsightRootFolder; var Endsight_fileContent = string.Empty;
-            DataInOut DIN = new DataInOut();
-
-            VarClearFuntion();
-
-            Endsight_filePath = LatestFileSort(Endsight_filePath);
-            richTextBox_AMR.Text = "Endsight File: " + Endsight_File1Name;
-
-            richTextBox_AMR.AppendText("\r\nbrowse this Directory for Production files: " + DataMergerFileStorage + @"\Output-->Date." + "\r\nyou can Copy the path.");
-            if (Endsight_filePath != null)
+            if(!comboBox_T2_moduleSelect.Text.ToUpper().Contains("SELECT"))
             {
-                
-                DIN.EndsightCSVFileExtractor(Endsight_filePath); 
+                listView_AMR.Visible = false;
+                string filePath = string.Empty; var fileContent = string.Empty;
+                var Endsight_fileContent = string.Empty;
 
-                this.EndsightStatus_M = DIN.EndsightStatus;
-                this.EndsightSerialNumber_M = DIN.EndsightSerialNumber;
-                this.EndsightDevUI_M = DIN.EndsightDevUI;
-            }
+                string Endsight_filePath = string.Empty;  //keep it empty
+                if (!comboBox_T2_moduleSelect.Text.ToUpper().Contains("SELECT"))    //if module type is selected 
+                    Endsight_filePath = comboBox_T2_moduleSelect.Text.ToUpper().Contains("WATER") ? endsight_Water_RootFolder : endsight_Gas_RootFolder;
 
-            using (OpenFileDialog openFileDialog1 = new OpenFileDialog())
-            {
-                openFileDialog1.InitialDirectory = DataMergerFileStorage;
-                openFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
-                openFileDialog1.FilterIndex = 2;
-                openFileDialog1.RestoreDirectory = true;
-                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                DataInOut DIN = new DataInOut();
+
+                VarClearFuntion();  //clear the lists and array
+
+                Endsight_filePath = LatestFileSort(Endsight_filePath);
+                richTextBox_AMR.Text = "Endsight File: " + Endsight_File1Name;
+
+                richTextBox_AMR.AppendText("\r\nbrowse this Directory for Production files: " 
+                    + DataMergerFileStorage + @"\Output-->Date." + "\r\nyou can Copy the path.");
+
+                if (!string.IsNullOrEmpty(Endsight_filePath))   // Endsight_filePath != null
                 {
-                    filePath = openFileDialog1.FileName;
-                    richTextBox_AMR.AppendText("\r\n" + openFileDialog1.FileName);
-                    textBox_ProductionFile.Text = filePath.Substring(filePath.LastIndexOf("\\") + 1, (filePath.Length - filePath.LastIndexOf("\\")) - 1);
-                    if (filePath != string.Empty)
+
+                    DIN.EndsightCSVFileExtractor(Endsight_filePath);    //this extracts the Endsight file.
+
+                    this.EndsightStatus_M = DIN.EndsightStatus;
+                    this.EndsightDevUI_M = DIN.EndsightDevUI;
+                }
+
+                using (OpenFileDialog openFileDialog1 = new OpenFileDialog())
+                {
+                    openFileDialog1.InitialDirectory = DataMergerFileStorage;
+                    openFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+                    openFileDialog1.FilterIndex = 2;
+                    openFileDialog1.RestoreDirectory = true;
+
+                    if (openFileDialog1.ShowDialog() == DialogResult.OK)
                     {
-                        DIN.MergerCSVFileExtractor(filePath);this.DevEUI_Main = DIN.DevEUI;
-                        this.AppKey_Main = DIN.AppKey; this.FwVer_Main = DIN.FwVer;
-                        this.SerialNumber_Main = DIN.SerialNumber;
+                        filePath = openFileDialog1.FileName;
+                        richTextBox_AMR.AppendText("\r\n" + openFileDialog1.FileName);
+                        textBox_ProductionFile.Text = filePath.Substring(filePath.LastIndexOf("\\") + 1, (filePath.Length - filePath.LastIndexOf("\\")) - 1);
+                        if (filePath != string.Empty)
+                        {
+                            DIN.AutoMergerCsvFileExtractor(filePath);
+                            
+                            this.DevEUI_Main = DIN.DevEUI;
+                            this.AppKey_Main = DIN.AppKey; this.FwVer_Main = DIN.FwVer;
+                            this.SerialNumber_Main = DIN.SerialNumber;
+                        }
                     }
                 }
+                if (filePath != string.Empty)
+                    richTextBox_AMR.AppendText("\r\nProduction File is selected!");
+                else
+                    richTextBox_AMR.AppendText("\r\nNothing is Selected, Try Browsing again!\r\nThe Help is Here.");
             }
-            if (filePath != string.Empty)
-                richTextBox_AMR.AppendText("\r\nProduction File is selected!");
             else
-                richTextBox_AMR.AppendText("\r\nNothing is Selected, Try Browsing again!\r\nThe Help is Here.");
+            {
+                richTextBox_AMR.AppendText("\r\nPlease select the module Type first.");
+            }
         }
         #endregion Button Clicks
 
@@ -538,7 +566,6 @@ namespace WaterGasTool
             SrNum_Main.Clear();
             SrNum_Long.Clear();
             EndsightStatus_M.Clear();
-            EndsightSerialNumber_M.Clear();
             EndsightDevUI_M.Clear();
           
             Array.Clear(Duplicates,0,Duplicates.Length);
@@ -555,32 +582,7 @@ namespace WaterGasTool
         }
         private void button_AMR_Start_Click(object sender, EventArgs e)
         {
-            //authentication
-            flag_AuthenticationError = true;
-            Authenticator AU = new Authenticator(this.CSPassword);
-            DialogResult dialogR = AU.ShowDialog();
-            label_authenticator.Visible = true;
-            if (dialogR == DialogResult.Cancel)
-            {
-                if (AU.Flag_AuthenticationSucccess)
-                {
-                    label_authenticator.Text = "The Credentials are Correct."; label_authenticator.ForeColor = Color.Green;
-                    flag_AuthenticationError = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, label_authenticator.Text);
-                }
-                else if (AU.Flag_AuthenticationSucccess && string.IsNullOrEmpty(textBox_ApplName.Text))
-                {
-                    label_authenticator.Text = "The Credentials are Correct, Empty Slots."; label_authenticator.ForeColor = Color.Red;
-                    pBarUni.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
-                }
-                else if (!AU.Flag_AuthenticationSucccess)
-                {
-                    label_authenticator.Text = "The Credentials are incorrect."; flag_AuthenticationError = true; label_authenticator.ForeColor = Color.Red;
-                    pBarUni.Visible = false; Loghandler LG = new Loghandler(CompleteLogAddress); LG.WriteToFile(true, "Error: " + label_authenticator.Text);
-                }
-                AU.Dispose();
-            }
-            //authentication ends
-            if (!flag_AuthenticationError)
+            if (!AuthenticationPopup())
             {
                 progressBar_AMR.Visible = true; progressBar_AMR.Maximum = (10 * DevEUI_Main.Count)+100; progressBar_AMR.Minimum = 0; progressBar_AMR.Value = progressBar_AMR.Minimum; label9.Visible = true;
 
@@ -732,7 +734,10 @@ namespace WaterGasTool
             this.WaterSerialNumber = long.Parse(XML.ConfigFileExtractor("waterS", SerialNumberTPath));
             this.GasSerialNumber = long.Parse(XML.ConfigFileExtractor("gasS", SerialNumberTPath));
 
-            this.endsightRootFolder = XML.ConfigFileExtractor("endsight", ConfigFilepath);
+            //this.endsightRootFolder = XML.ConfigFileExtractor("endsight", ConfigFilepath);
+            this.endsight_Water_RootFolder = XML.ConfigFileExtractor("endsight_Water", ConfigFilepath);
+            this.endsight_Gas_RootFolder = XML.ConfigFileExtractor("endsight_Gas", ConfigFilepath);
+
             if (CSPassword.Length > 5)
             {
                 MessageBox.Show("Error: This is Blocking Error.\r\nNothing will work until you change the password to less than 5 characters.\r\nYou can do that by contacting admin at\r\nvishal@visionmetering.com");Close();
@@ -771,11 +776,10 @@ namespace WaterGasTool
         public void EndsightComparefunction(string path)  //tab 2 function
         {
             SQLQueries SQL = new SQLQueries(DBServername + ";", DBName, DBUser, DBPass);
-            //ColumnNominclature(path);//columns would be named here instead of after this function.
 
             for (int counter = 0; counter < EndsightDevUI_M.Count; counter++)
             {
-                string EndsightDevEuiTemp = EndsightDevUI_M[counter].ToLowerInvariant();
+                string EndsightDevEuiTemp = EndsightDevUI_M[counter].ToLower();
                 if (DevEUI_Main.Contains(EndsightDevEuiTemp)) { }
             }
             progressBar_AMR.Value += 10;//progress bar
@@ -783,19 +787,19 @@ namespace WaterGasTool
             {
                 for (int comparingTo = 0; comparingTo < EndsightDevUI_M.Count; comparingTo++)
                 {
-                    while (DevEUI_Main[reference] == EndsightDevUI_M[comparingTo].ToLowerInvariant())//devEui matching?
+                    while (DevEUI_Main[reference].ToLower() == EndsightDevUI_M[comparingTo].ToLower())//devEui matching?
                     {
-                        if (SerialNumber_Main[reference] == EndsightSerialNumber_M[comparingTo])//meterID matching?
-                        {
+                        //if (SerialNumber_Main[reference] == EndsightSerialNumber_M[comparingTo])//meterID matching?
+                        //{
                             if (EndsightStatus_M[comparingTo].ToUpper().Contains("OK"))//status code matching?
                             {
                                 Tab2_FileAppend(reference, comparingTo, path);//why it is here? to append the correct data flaged OK into File to AMR check.
                                 DateTime dateTime = DateTime.Now;//local time taken from the computer
 
-                                if (string.IsNullOrEmpty(SQL.GrabADatabaseWithMeterID(SerialNumber_Main[reference], "AMRchkBy")) || checkBox_AMR_updateAll.Checked)      //check if the return is true or false  CountForreturnDbData <= 1
+                                if (string.IsNullOrEmpty(SQL.GrabADatabaseWithMeterID(DevEUI_Main[reference], "AMRchkBy")) || checkBox_AMR_updateAll.Checked)      //check if the return is true or false  CountForreturnDbData <= 1
                                 {
                                     //MeterId, date, initialofUser, AppKey, DatabaseChange, FwVersion, TxPower, FreqChannels, AppEUI
-                                    SQL.PostDataToAMRCheck(SerialNumber_Main[reference], dateTime, textBox_Initials.Text.ToUpper(), AppKey_Main[reference], FwVer_Main[reference]);
+                                    SQL.PostDataToAMRCheck(DevEUI_Main[reference], dateTime, textBox_Initials.Text.ToUpper(), AppKey_Main[reference], FwVer_Main[reference] , TextBox_AppEUI.Text , TextBox_FreqChannels.Text , TextBox_TxPower.Text);
                                     CounterForUpdatedMetersToDB++;
                                     progressBar_AMR.Value += 10;//progress bar
                                 }
@@ -804,8 +808,8 @@ namespace WaterGasTool
                                 CounterForCorrectDataSet++;
                             }
                             else { statusCode[reference] = EndsightStatus_M[comparingTo] + ":" + "DSC"; }//commented break
-                        }
-                        else { tempEndMeterID[reference] = EndsightSerialNumber_M[comparingTo] + ":" + "DMIU"; }//commented break
+                        //}
+                        //else { tempEndMeterID[reference] = EndsightSerialNumber_M[comparingTo] + ":" + "DMIU"; }//commented break
                         break;
                     }
                 }
@@ -816,13 +820,13 @@ namespace WaterGasTool
             string[] displayConfigArray = new string[1];
             TempArrayForDisplayContent[1] = DevEUI_Main[reference];
             TempArrayForDisplayContent[2] = SerialNumber_Main[reference];
-            TempArrayForDisplayContent[3] = EndsightSerialNumber_M[compareTo];
-            TempArrayForDisplayContent[4] = EndsightStatus_M[compareTo] + "_Endst";
-            TempArrayForDisplayContent[5] = FwVer_Main[reference];
+            //TempArrayForDisplayContent[3] = EndsightSerialNumber_M[compareTo];
+            TempArrayForDisplayContent[3] = EndsightStatus_M[compareTo] + "_Endst";
+            TempArrayForDisplayContent[4] = FwVer_Main[reference];
             if (TempArrayForDisplayContent[3] == null) { TempArrayForDisplayContent[3] = "ND_Endst"; }//EndsightMeterID_ Nd is No data
             if (TempArrayForDisplayContent[4] == null) { TempArrayForDisplayContent[4] = "OK_Mnul"; }//Status Code Mnul is Manual entry
 
-            displayConfigArray[0] = TempArrayForDisplayContent[1] + "," + TempArrayForDisplayContent[2] + "," + TempArrayForDisplayContent[3] + "," + TempArrayForDisplayContent[4] + "," + TempArrayForDisplayContent[5];
+            displayConfigArray[0] = TempArrayForDisplayContent[1] + "," + TempArrayForDisplayContent[2] + "," + TempArrayForDisplayContent[3] + "," + TempArrayForDisplayContent[4];    // + "," + TempArrayForDisplayContent[5];
             File.AppendAllLines(path, displayConfigArray);
         }
         public bool AuthenticationPopup()
@@ -871,7 +875,8 @@ namespace WaterGasTool
             richTextBox_Documentation.AppendText("\r\n\r\nversion currently running: " + version + " and version Available is " + VersionFromConfig);
             richTextBox_Documentation.AppendText("\r\n\r\nIP address: " + IP_Comp + " and Your ComputerName: " + Host);
 
-            richTextBox_AMR.Text = "Please verify that the Endsight root folder is correct before Doing AMR check.\r\nEndsight RootFolder: " + endsightRootFolder;
+            richTextBox_AMR.Text = "Please verify that the Endsight root folder is correct before Doing AMR check.\r\nEndsight Water RootFolder: " + endsight_Water_RootFolder;
+            richTextBox_AMR.AppendText("\r\n\r\nEndsight Gas RootFolder: " + endsight_Gas_RootFolder);
         }
 
         public void Tab4_DuplicateFinder()                                   //this function helps find the duplicates in the file 

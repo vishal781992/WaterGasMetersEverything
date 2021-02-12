@@ -135,16 +135,16 @@ namespace WaterGasTool
 
         #region PostDataToAMRCheck
 
-        public string PostDataToAMRCheck(string MeterId, DateTime date, string initialofUser, string AppKey, string FwVersion)//for AMR check
+        public string PostDataToAMRCheck(string DevEUI, DateTime date, string initialofUser, string AppKey, string FwVersion, string AppEUI, string FreqChannels, string TxPower)//for AMR check
         {
             try
             {
-                string query = "UPDATE dbo.Meter set AMRchkBy = " + "'" + initialofUser + "'" + ",AMRchkDate = " + "'" + date + "'" + ",AppKey = " + "'" + AppKey + "'" + ",AppEUI = " + ",ModemFirmwareRev = " + "'" + FwVersion + "'" + "where MeterID =" + "'" + MeterId + "'";
+                string query = "UPDATE dbo.Meter set AMRchkBy = " + "'" + initialofUser + "'" + ",AMRchkDate = " + "'" + date + "'" + ",AppKey = " + "'" + AppKey + "'" + ",AppEUI = " + ",ModemFirmwareRev = " + "'" + FwVersion + "'"+ ",AppEUI = " + "'" + AppEUI + "'" + ",FreqChannels = " + "'" + FreqChannels + "'" + ",TxPower = " + "'" + TxPower + "'" + "where DevEUI =" + "'" + DevEUI + "'";
                 DataTable dt = ExecuteQuery(query, ConnectionStringBuilder());
 
                 foreach (DataRow dr in dt.Rows)
                 {
-                    MessageFromDatabase = Utilities.CheckForNullString(Utilities.CheckForNull<string>(dr[MeterId]));
+                    MessageFromDatabase = Utilities.CheckForNullString(Utilities.CheckForNull<string>(dr[DevEUI]));
                 }
                 return MessageFromDatabase;
             }

@@ -101,10 +101,11 @@ namespace WaterGasTool
                         string[] fields = parser.ReadFields();
                         #endregion Parsing the engg file
 
-                        EndsightSerialNumber.Add(fields[2]);
-                        EndsightDevUI.Add(fields[3]);
+                        EndsightDevUI.Add(fields[2]);
                         EndsightStatus.Add(fields[4]);
                     }
+                    EndsightDevUI.RemoveAt(0);
+                    EndsightStatus.RemoveAt(0);
                 }
                 catch 
                 {
@@ -113,23 +114,31 @@ namespace WaterGasTool
             }
         }
 
-        public void MergerCSVFileExtractor(string filePath)
+        public void AutoMergerCsvFileExtractor(string filePath)
         {
             using (TextFieldParser parser = new TextFieldParser(filePath))
             {
-                parser.TextFieldType = FieldType.Delimited;
-                parser.SetDelimiters(",");
-                while (!parser.EndOfData)
+                try
                 {
-                    #region Parsing the engg file
-                    string[] fields = parser.ReadFields();
-                    #endregion Parsing the engg file
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(",");
+                    while (!parser.EndOfData)
+                    {
+                        #region Parsing the engg file
+                        string[] fields = parser.ReadFields();
+                        #endregion Parsing the engg file
 
-                    DevEUI.Add(fields[0]);
-                    AppKey.Add(fields[1]);
-                    FwVer.Add(fields[3]);
-                    SerialNumber.Add(fields[4]);
+                        DevEUI.Add(fields[0]);
+                        AppKey.Add(fields[1]);
+                        FwVer.Add(fields[3]);
+                        SerialNumber.Add(fields[4]);
+                    }
+                    DevEUI.RemoveAt(0);
+                    AppKey.RemoveAt(0);
+                    FwVer.RemoveAt(0);
+                    SerialNumber.RemoveAt(0);
                 }
+                catch { }
             }
         }
     }

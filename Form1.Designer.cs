@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.comboBox_T1_moduleSelect = new System.Windows.Forms.ComboBox();
             this.button_tab1_UploadDB = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
@@ -65,6 +66,16 @@
             this.textBox_dateShow = new System.Windows.Forms.TextBox();
             this.richTextBoxTab1 = new System.Windows.Forms.RichTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.comboBox_T2_moduleSelect = new System.Windows.Forms.ComboBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.TextBox_TxPower = new System.Windows.Forms.MaskedTextBox();
+            this.TextBox_FreqChannels = new System.Windows.Forms.MaskedTextBox();
+            this.TextBox_AppEUI = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
@@ -79,10 +90,12 @@
             this.richTextBox_AMR = new System.Windows.Forms.RichTextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.richTextBox_Documentation = new System.Windows.Forms.RichTextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage3.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,6 +112,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.comboBox_T1_moduleSelect);
             this.tabPage1.Controls.Add(this.button_tab1_UploadDB);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.label8);
@@ -135,12 +149,24 @@
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
+            // comboBox_T1_moduleSelect
+            // 
+            this.comboBox_T1_moduleSelect.FormattingEnabled = true;
+            this.comboBox_T1_moduleSelect.Items.AddRange(new object[] {
+            "WATER modules",
+            "GAS modules"});
+            this.comboBox_T1_moduleSelect.Location = new System.Drawing.Point(609, 199);
+            this.comboBox_T1_moduleSelect.Name = "comboBox_T1_moduleSelect";
+            this.comboBox_T1_moduleSelect.Size = new System.Drawing.Size(227, 21);
+            this.comboBox_T1_moduleSelect.TabIndex = 30;
+            this.comboBox_T1_moduleSelect.Text = "Select the Module Type";
+            // 
             // button_tab1_UploadDB
             // 
             this.button_tab1_UploadDB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_tab1_UploadDB.Location = new System.Drawing.Point(842, 91);
+            this.button_tab1_UploadDB.Location = new System.Drawing.Point(842, 140);
             this.button_tab1_UploadDB.Name = "button_tab1_UploadDB";
-            this.button_tab1_UploadDB.Size = new System.Drawing.Size(133, 72);
+            this.button_tab1_UploadDB.Size = new System.Drawing.Size(133, 23);
             this.button_tab1_UploadDB.TabIndex = 29;
             this.button_tab1_UploadDB.Text = "Serial upload";
             this.button_tab1_UploadDB.UseVisualStyleBackColor = true;
@@ -151,7 +177,7 @@
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(842, 6);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(133, 79);
+            this.button1.Size = new System.Drawing.Size(133, 157);
             this.button1.TabIndex = 0;
             this.button1.Text = "File Merge";
             this.button1.UseVisualStyleBackColor = true;
@@ -160,7 +186,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(869, 362);
+            this.label8.Location = new System.Drawing.Point(869, 387);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(109, 13);
             this.label8.TabIndex = 28;
@@ -214,7 +240,7 @@
             // 
             this.label_authenticator.AutoSize = true;
             this.label_authenticator.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.label_authenticator.Location = new System.Drawing.Point(606, 362);
+            this.label_authenticator.Location = new System.Drawing.Point(606, 387);
             this.label_authenticator.Name = "label_authenticator";
             this.label_authenticator.Size = new System.Drawing.Size(231, 13);
             this.label_authenticator.TabIndex = 21;
@@ -232,7 +258,7 @@
             // label_MeterRange
             // 
             this.label_MeterRange.AutoSize = true;
-            this.label_MeterRange.Location = new System.Drawing.Point(606, 313);
+            this.label_MeterRange.Location = new System.Drawing.Point(606, 332);
             this.label_MeterRange.Name = "label_MeterRange";
             this.label_MeterRange.Size = new System.Drawing.Size(69, 13);
             this.label_MeterRange.TabIndex = 19;
@@ -265,7 +291,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.DimGray;
-            this.label6.Location = new System.Drawing.Point(607, 274);
+            this.label6.Location = new System.Drawing.Point(607, 293);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(132, 12);
             this.label6.TabIndex = 16;
@@ -276,16 +302,16 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.DimGray;
-            this.label5.Location = new System.Drawing.Point(605, 230);
+            this.label5.Location = new System.Drawing.Point(605, 249);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(266, 12);
+            this.label5.Size = new System.Drawing.Size(247, 12);
             this.label5.TabIndex = 15;
-            this.label5.Text = "All Application names will be prefixed by LGW_(LoraGasWater).";
+            this.label5.Text = "All Application names will be prefixed by WATER_ or GAS_";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(755, 294);
+            this.label3.Location = new System.Drawing.Point(755, 313);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(31, 13);
             this.label3.TabIndex = 13;
@@ -293,14 +319,14 @@
             // 
             // textBox_SerialNumber_maxVal
             // 
-            this.textBox_SerialNumber_maxVal.Location = new System.Drawing.Point(792, 291);
+            this.textBox_SerialNumber_maxVal.Location = new System.Drawing.Point(792, 310);
             this.textBox_SerialNumber_maxVal.Name = "textBox_SerialNumber_maxVal";
             this.textBox_SerialNumber_maxVal.Size = new System.Drawing.Size(126, 20);
             this.textBox_SerialNumber_maxVal.TabIndex = 12;
             // 
             // textBox_SerialNumber_minVal
             // 
-            this.textBox_SerialNumber_minVal.Location = new System.Drawing.Point(623, 290);
+            this.textBox_SerialNumber_minVal.Location = new System.Drawing.Point(623, 309);
             this.textBox_SerialNumber_minVal.Name = "textBox_SerialNumber_minVal";
             this.textBox_SerialNumber_minVal.Size = new System.Drawing.Size(126, 20);
             this.textBox_SerialNumber_minVal.TabIndex = 11;
@@ -308,7 +334,7 @@
             // checkBox_MeterRange
             // 
             this.checkBox_MeterRange.AutoSize = true;
-            this.checkBox_MeterRange.Location = new System.Drawing.Point(608, 290);
+            this.checkBox_MeterRange.Location = new System.Drawing.Point(608, 309);
             this.checkBox_MeterRange.Name = "checkBox_MeterRange";
             this.checkBox_MeterRange.Size = new System.Drawing.Size(141, 17);
             this.checkBox_MeterRange.TabIndex = 10;
@@ -319,7 +345,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(895, 235);
+            this.label2.Location = new System.Drawing.Point(895, 254);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 9;
@@ -328,7 +354,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(917, 191);
+            this.label1.Location = new System.Drawing.Point(918, 210);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(57, 13);
             this.label1.TabIndex = 8;
@@ -336,14 +362,14 @@
             // 
             // textBox_ApplDesp
             // 
-            this.textBox_ApplDesp.Location = new System.Drawing.Point(609, 251);
+            this.textBox_ApplDesp.Location = new System.Drawing.Point(609, 270);
             this.textBox_ApplDesp.Name = "textBox_ApplDesp";
             this.textBox_ApplDesp.Size = new System.Drawing.Size(365, 20);
             this.textBox_ApplDesp.TabIndex = 7;
             // 
             // textBox_ApplName
             // 
-            this.textBox_ApplName.Location = new System.Drawing.Point(609, 207);
+            this.textBox_ApplName.Location = new System.Drawing.Point(609, 226);
             this.textBox_ApplName.Name = "textBox_ApplName";
             this.textBox_ApplName.Size = new System.Drawing.Size(366, 20);
             this.textBox_ApplName.TabIndex = 6;
@@ -352,11 +378,11 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(608, 329);
+            this.button2.Location = new System.Drawing.Point(608, 354);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(366, 30);
             this.button2.TabIndex = 5;
-            this.button2.Text = "<<<<<<<<Chrip Stack Upload>>>>>>>>";
+            this.button2.Text = "Chrip Stack Upload";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             this.button2.MouseEnter += new System.EventHandler(this.button2_MouseEnter);
@@ -433,6 +459,10 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.label12);
+            this.tabPage3.Controls.Add(this.comboBox_T2_moduleSelect);
+            this.tabPage3.Controls.Add(this.groupBox5);
+            this.tabPage3.Controls.Add(this.label20);
             this.tabPage3.Controls.Add(this.label11);
             this.tabPage3.Controls.Add(this.label10);
             this.tabPage3.Controls.Add(this.label9);
@@ -453,13 +483,115 @@
             this.tabPage3.Text = "AMR Check";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // comboBox_T2_moduleSelect
+            // 
+            this.comboBox_T2_moduleSelect.FormattingEnabled = true;
+            this.comboBox_T2_moduleSelect.Items.AddRange(new object[] {
+            "WATER modules",
+            "GAS modules"});
+            this.comboBox_T2_moduleSelect.Location = new System.Drawing.Point(674, 35);
+            this.comboBox_T2_moduleSelect.Name = "comboBox_T2_moduleSelect";
+            this.comboBox_T2_moduleSelect.Size = new System.Drawing.Size(290, 21);
+            this.comboBox_T2_moduleSelect.TabIndex = 17;
+            this.comboBox_T2_moduleSelect.Text = "Select the Module Type";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Controls.Add(this.label19);
+            this.groupBox5.Controls.Add(this.label14);
+            this.groupBox5.Controls.Add(this.label13);
+            this.groupBox5.Controls.Add(this.TextBox_TxPower);
+            this.groupBox5.Controls.Add(this.TextBox_FreqChannels);
+            this.groupBox5.Controls.Add(this.TextBox_AppEUI);
+            this.groupBox5.Location = new System.Drawing.Point(674, 162);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(290, 122);
+            this.groupBox5.TabIndex = 12;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "AMR Chck By";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.Gray;
+            this.label4.Location = new System.Drawing.Point(3, 94);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(139, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "The 3 fields can be BLANK.";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label19.Location = new System.Drawing.Point(184, 74);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(52, 13);
+            this.label19.TabIndex = 14;
+            this.label19.Text = "Tx Power";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label14.Location = new System.Drawing.Point(184, 48);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(98, 13);
+            this.label14.TabIndex = 13;
+            this.label14.Text = "Frequency channel";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label13.Location = new System.Drawing.Point(185, 25);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(47, 13);
+            this.label13.TabIndex = 12;
+            this.label13.Text = "App EUI";
+            // 
+            // TextBox_TxPower
+            // 
+            this.TextBox_TxPower.Location = new System.Drawing.Point(6, 71);
+            this.TextBox_TxPower.Name = "TextBox_TxPower";
+            this.TextBox_TxPower.Size = new System.Drawing.Size(172, 20);
+            this.TextBox_TxPower.TabIndex = 3;
+            // 
+            // TextBox_FreqChannels
+            // 
+            this.TextBox_FreqChannels.Location = new System.Drawing.Point(6, 45);
+            this.TextBox_FreqChannels.Name = "TextBox_FreqChannels";
+            this.TextBox_FreqChannels.Size = new System.Drawing.Size(172, 20);
+            this.TextBox_FreqChannels.TabIndex = 2;
+            // 
+            // TextBox_AppEUI
+            // 
+            this.TextBox_AppEUI.Location = new System.Drawing.Point(6, 19);
+            this.TextBox_AppEUI.Name = "TextBox_AppEUI";
+            this.TextBox_AppEUI.Size = new System.Drawing.Size(172, 20);
+            this.TextBox_AppEUI.TabIndex = 1;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.ForeColor = System.Drawing.Color.Gray;
+            this.label20.Location = new System.Drawing.Point(671, 110);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(101, 13);
+            this.label20.TabIndex = 16;
+            this.label20.Text = "Default: unchecked\r\n";
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.BackColor = System.Drawing.Color.White;
             this.label11.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(749, 190);
+            this.label11.Location = new System.Drawing.Point(749, 248);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(0, 15);
             this.label11.TabIndex = 11;
@@ -470,7 +602,7 @@
             this.label10.BackColor = System.Drawing.Color.White;
             this.label10.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(793, 36);
+            this.label10.Location = new System.Drawing.Point(793, 65);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(42, 15);
             this.label10.TabIndex = 10;
@@ -481,7 +613,7 @@
             this.label9.AutoSize = true;
             this.label9.BackColor = System.Drawing.Color.Gainsboro;
             this.label9.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.label9.Location = new System.Drawing.Point(749, 99);
+            this.label9.Location = new System.Drawing.Point(743, 308);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(163, 13);
             this.label9.TabIndex = 9;
@@ -489,7 +621,7 @@
             // 
             // progressBar_AMR
             // 
-            this.progressBar_AMR.Location = new System.Drawing.Point(66, 250);
+            this.progressBar_AMR.Location = new System.Drawing.Point(66, 455);
             this.progressBar_AMR.Name = "progressBar_AMR";
             this.progressBar_AMR.Size = new System.Drawing.Size(813, 30);
             this.progressBar_AMR.TabIndex = 8;
@@ -497,7 +629,7 @@
             // checkBox_AMR_ListView
             // 
             this.checkBox_AMR_ListView.AutoSize = true;
-            this.checkBox_AMR_ListView.Location = new System.Drawing.Point(839, 61);
+            this.checkBox_AMR_ListView.Location = new System.Drawing.Point(757, 141);
             this.checkBox_AMR_ListView.Name = "checkBox_AMR_ListView";
             this.checkBox_AMR_ListView.Size = new System.Drawing.Size(67, 17);
             this.checkBox_AMR_ListView.TabIndex = 7;
@@ -521,7 +653,7 @@
             // checkBox_AMR_updateAll
             // 
             this.checkBox_AMR_updateAll.AutoSize = true;
-            this.checkBox_AMR_updateAll.Location = new System.Drawing.Point(674, 61);
+            this.checkBox_AMR_updateAll.Location = new System.Drawing.Point(674, 90);
             this.checkBox_AMR_updateAll.Name = "checkBox_AMR_updateAll";
             this.checkBox_AMR_updateAll.Size = new System.Drawing.Size(117, 17);
             this.checkBox_AMR_updateAll.TabIndex = 5;
@@ -530,15 +662,15 @@
             // 
             // textBox_Initials
             // 
-            this.textBox_Initials.Location = new System.Drawing.Point(839, 33);
+            this.textBox_Initials.Location = new System.Drawing.Point(839, 62);
             this.textBox_Initials.Name = "textBox_Initials";
-            this.textBox_Initials.Size = new System.Drawing.Size(40, 20);
+            this.textBox_Initials.Size = new System.Drawing.Size(125, 20);
             this.textBox_Initials.TabIndex = 4;
             this.textBox_Initials.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_Initials_KeyPress);
             // 
             // button_AMR_Browse
             // 
-            this.button_AMR_Browse.Location = new System.Drawing.Point(674, 33);
+            this.button_AMR_Browse.Location = new System.Drawing.Point(674, 62);
             this.button_AMR_Browse.Name = "button_AMR_Browse";
             this.button_AMR_Browse.Size = new System.Drawing.Size(106, 22);
             this.button_AMR_Browse.TabIndex = 3;
@@ -550,14 +682,14 @@
             // 
             this.textBox_ProductionFile.Location = new System.Drawing.Point(551, 7);
             this.textBox_ProductionFile.Name = "textBox_ProductionFile";
-            this.textBox_ProductionFile.Size = new System.Drawing.Size(424, 20);
+            this.textBox_ProductionFile.Size = new System.Drawing.Size(413, 20);
             this.textBox_ProductionFile.TabIndex = 2;
             // 
             // button_AMR_Start
             // 
-            this.button_AMR_Start.Location = new System.Drawing.Point(674, 81);
+            this.button_AMR_Start.Location = new System.Drawing.Point(674, 290);
             this.button_AMR_Start.Name = "button_AMR_Start";
-            this.button_AMR_Start.Size = new System.Drawing.Size(301, 49);
+            this.button_AMR_Start.Size = new System.Drawing.Size(290, 49);
             this.button_AMR_Start.TabIndex = 1;
             this.button_AMR_Start.Text = "AMR check";
             this.button_AMR_Start.UseVisualStyleBackColor = true;
@@ -596,6 +728,18 @@
             this.richTextBox_Documentation.TabIndex = 0;
             this.richTextBox_Documentation.Text = "";
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.ForeColor = System.Drawing.Color.Gray;
+            this.label12.Location = new System.Drawing.Point(674, 140);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(77, 15);
+            this.label12.TabIndex = 18;
+            this.label12.Text = "<<<<<<<<<<";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -615,6 +759,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -671,6 +817,18 @@
         private System.Windows.Forms.RichTextBox richTextBoxTab1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button_tab1_UploadDB;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.MaskedTextBox TextBox_TxPower;
+        private System.Windows.Forms.MaskedTextBox TextBox_FreqChannels;
+        private System.Windows.Forms.TextBox TextBox_AppEUI;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.ComboBox comboBox_T2_moduleSelect;
+        private System.Windows.Forms.ComboBox comboBox_T1_moduleSelect;
+        private System.Windows.Forms.Label label12;
     }
 }
 

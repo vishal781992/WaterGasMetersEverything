@@ -2,8 +2,8 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 [Setup]
-AppName=SimAutomation
-AppVersion=0.0.2
+AppName=WaterGasTool
+AppVersion=0.0.3
 DefaultDirName={pf}\WaterGasTool
 ; Since no icons will be created in "{group}", we don't need the wizard
 ; to ask for a Start Menu folder name:
@@ -12,7 +12,7 @@ UninstallDisplayIcon={app}\WaterGasTool.exe
 AppPublisher=Vision Metering
 ;OutputDir=userdocs:Inno Setup Examples Output
 
-OutputBaseFilename=WaterGasTool 0.0.2 Beta Setup
+OutputBaseFilename=WaterGasTool 0.0.3 Setup
 
 [Files]
 Source: "C:\Project\WaterGasTool\bin\Release\WaterGasTool.exe"; DestDir: "{app}"
